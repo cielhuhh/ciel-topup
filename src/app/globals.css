@@ -1,26 +1,200 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ───────────── Tokens ───────────── */
+:root{
+  /* Surface & text */
+  --background:#0b0c10;
+  --foreground:#f4f6f8;
+
+  /* Brand system */
+  --brand:#6d5cff;        /* indigo/violet blend */
+  --brand-600:#5a46ff;
+  --accent:#22d3ee;       /* cyan */
+  --success:#22c55e;
+  --danger:#ef4444;
+
+  /* Surfaces & effects */
+  --glass: rgba(255,255,255,.06);
+  --ring: rgba(109,92,255,.55);
+
+  --border-soft: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --surface-soft: color-mix(in oklab, var(--background) 94%, white 6%);
+  --surface-card: color-mix(in oklab, var(--background) 92%, white 8%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-color-scheme: light){
+  :root{
+    --background:#ffffff;
+    --foreground:#0b0c10;
+    --glass: rgba(255,255,255,.75);
+    --ring: rgba(109,92,255,.45);
+    --surface-soft: color-mix(in oklab, var(--background) 96%, black 4%);
+    --surface-card: color-mix(in oklab, var(--background) 98%, black 2%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Optional: manual theme switch via data-theme on <html data-theme="light|dark"> */
+html[data-theme="light"]{
+  --background:#ffffff; --foreground:#0b0c10;
+  --glass: rgba(255,255,255,.75); --ring: rgba(109,92,255,.45);
+  --surface-soft: color-mix(in oklab, var(--background) 96%, black 4%);
+  --surface-card: color-mix(in oklab, var(--background) 98%, black 2%);
 }
+html[data-theme="dark"]{
+  --background:#272d45; --foreground:#f4f6f8;
+  --glass: rgba(255,255,255,.06); --ring: rgba(109,92,255,.55);
+  --surface-soft: color-mix(in oklab, var(--background) 94%, white 6%);
+  --surface-card: color-mix(in oklab, var(--background) 92%, white 8%);
+}
+
+/* ───────────── Base ───────────── */
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(109,92,255,.15), transparent),
+    radial-gradient(900px 500px at 90% 0%, rgba(34,211,238,.10), transparent),
+    var(--background);
+  color:var(--foreground);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+::selection{ background: color-mix(in oklab, var(--brand) 30%, transparent); color: inherit }
+
+/* Scrollbar */
+*{ scrollbar-width:thin; scrollbar-color: rgba(109,92,255,.5) transparent }
+*::-webkit-scrollbar{ width:10px; height:10px }
+*::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, var(--brand), var(--accent));
+  border-radius:999px;
+}
+*::-webkit-scrollbar-track{ background: transparent }
+
+/* Helpers */
+.bg-background{ background:var(--background) }
+.text-foreground{ color:var(--foreground) }
+
+/* container max */
+.container-app{
+  margin-left:auto; margin-right:auto;
+  max-width:80rem; /* ~7xl */
+  padding-left:1rem; padding-right:1rem;
+}
+@media (min-width:640px){ .container-app{ padding-left:1.5rem; padding-right:1.5rem } }
+
+/* auto-fit grid */
+.grid-auto-fit{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:1rem }
+
+/* ───────────── Components ───────────── */
+.card{
+  border:1px solid var(--border-soft);
+  background: var(--surface-card);
+  border-radius: 1rem; /* 2xl */
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.card:hover{ transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15) }
+
+.glass{
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:1px solid var(--border-soft);
+  border-radius: 1.5rem; /* 3xl */
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid var(--border-soft);
+  border-radius: .75rem; /* xl */
+  padding:.6rem 1rem; font-size:.9rem; font-weight:600;
+  transition: box-shadow .2s, transform .15s, filter .2s, background .2s, color .2s;
+}
+.btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px }
+.btn:hover{ transform: translateY(-1px) }
+
+.btn-primary{
+  color:white; border-color:transparent;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  box-shadow: 0 4px 14px rgba(109,92,255,.25);
+}
+.btn-primary:hover{ filter: brightness(1.05) }
+
+.btn-outline{
+  background: var(--surface-soft);
+}
+.btn-outline:hover{ border-color: color-mix(in oklab, var(--brand) 50%, var(--foreground) 30%) }
+
+.btn-muted{
+  font-size:.78rem;
+  background: var(--surface-soft);
+}
+
+/* Chip / badge */
+.chip{
+  display:inline-flex; align-items:center; gap:.375rem;
+  border:1px solid var(--border-soft);
+  background: var(--surface-soft);
+  border-radius: 999px;
+  padding:.3rem .75rem; font-size:.75rem; font-weight:500;
+}
+
+/* Text brand gradient */
+.text-brand-gradient{
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+
+/* Focus ring util */
+.focus-ring{ box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 60%, transparent) }
+
+/* Input */
+.input{
+  width:100%;
+  border:1px solid var(--border-soft);
+  border-radius: .75rem;
+  padding:.75rem 1rem; font-size:.9rem;
+  background: var(--surface-soft);
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input:focus{
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+  border-color: color-mix(in oklab, var(--brand) 60%, var(--foreground) 30%);
+}
+
+/* Section spacing */
+.section{ padding-top:1.5rem; padding-bottom:1.5rem }
+@media (min-width:768px){ .section{ padding-top:2.5rem; padding-bottom:2.5rem } }
+
+/* Hover raise */
+.hover-raise{ transition: transform .2s ease, box-shadow .2s ease }
+.hover-raise:hover{ transform: translateY(-2px) }
+
+/* Skeleton shimmer */
+@keyframes shimmer { 100% { transform: translateX(100%) } }
+.skeleton{
+  position: relative; overflow: hidden;
+  border-radius: .75rem; background: var(--surface-soft);
+}
+.skeleton::after{
+  content:""; position:absolute; inset:0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+  animation: shimmer 1.25s infinite;
+}
+
+/* Tooltip (basic) */
+.tooltip{
+  position:relative;
+}
+.tooltip::after{
+  content: attr(data-tip);
+  position:absolute; bottom: calc(100% + .5rem); left: 50%; translate:-50% 0;
+  background: var(--foreground); color: var(--background);
+  border-radius:.5rem; padding:.35rem .6rem; font-size:.75rem; white-space:nowrap;
+  opacity:0; pointer-events:none; transition: opacity .15s ease;
+}
+.tooltip:hover::after{ opacity:1 }
