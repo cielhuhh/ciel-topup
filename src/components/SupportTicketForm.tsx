@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 
+type TicketPayload = {
+  name: string;
+  contact: string;
+  orderId?: string;
+  desc: string;
+};
+
 export default function SupportTicketForm() {
   const [submitting, setSubmitting] = useState(false);
 
@@ -9,11 +16,16 @@ export default function SupportTicketForm() {
     e.preventDefault();
     setSubmitting(true);
 
-    // Ambil nilai form kalau nanti mau dipost ke /api/tickets
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form) as any);
+    const raw = Object.fromEntries(new FormData(form).entries());
+    const data: TicketPayload = {
+      name: String(raw.name || ""),
+      contact: String(raw.contact || ""),
+      orderId: raw.orderId ? String(raw.orderId) : undefined,
+      desc: String(raw.desc || ""),
+    };
 
-    // TODO: kirim ke endpoint-mu
+    // TODO: kirim ke endpoint-mu, contoh:
     // await fetch("/api/tickets", { method: "POST", body: JSON.stringify(data) });
 
     setTimeout(() => {

@@ -1,7 +1,6 @@
 "use client";
-import { useMemo } from "react";
 
-export type Filter = {
+type Props = {
   q: string;
   setQ: (v: string) => void;
   tag: string | null;
@@ -11,42 +10,45 @@ export type Filter = {
   tags: string[];
 };
 
-export default function FilterBar({ q, setQ, tag, setTag, sort, setSort, tags }: Filter) {
-  const allTags = useMemo(() => ["All", ...tags], [tags]);
+export default function FilterBar({ q, setQ, tag, setTag, sort, setSort, tags }: Props) {
   return (
-    <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
-      <div className="flex-1">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Cari game: MLBB, FF, Genshin..."
-          className="w-full rounded-xl border bg-white/70 px-4 py-3 text-sm outline-none shadow-sm placeholder:text-neutral-400 focus:border-neutral-400 dark:bg-neutral-900/70"
-        />
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Cari game…"
+        className="w-full max-w-sm rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
+      />
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setSort("popular")}
+          className={`rounded-xl border px-3 py-1.5 text-xs shadow-sm transition ${
+            sort === "popular" ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "hover:shadow dark:border-neutral-700"
+          }`}
+        >
+          Populer
+        </button>
+        <button
+          onClick={() => setSort("name")}
+          className={`rounded-xl border px-3 py-1.5 text-xs shadow-sm transition ${
+            sort === "name" ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "hover:shadow dark:border-neutral-700"
+          }`}
+        >
+          A–Z
+        </button>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {allTags.map((t) => {
-          const val = t === "All" ? null : t;
-          const active = (val ?? null) === tag;
-          return (
-            <button
-              key={t}
-              onClick={() => setTag(val)}
-              className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                active ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10" : "hover:bg-neutral-50 dark:hover:bg-neutral-800"
-              }`}
-            >
-              {t}
-            </button>
-          );
-        })}
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as any)}
-          className="rounded-xl border bg-white/70 px-3 py-2 text-xs shadow-sm outline-none dark:bg-neutral-900/70"
-        >
-          <option value="popular">Paling Populer</option>
-          <option value="name">Abjad A–Z</option>
-        </select>
+        {tags.map((t) => (
+          <button
+            key={t}
+            onClick={() => setTag(tag === t ? null : t)}
+            className={`rounded-full border px-3 py-1 text-xs transition ${
+              tag === t ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "hover:shadow dark:border-neutral-700"
+            }`}
+          >
+            #{t}
+          </button>
+        ))}
       </div>
     </div>
   );
