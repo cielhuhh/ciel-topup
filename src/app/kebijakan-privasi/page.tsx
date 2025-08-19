@@ -5,12 +5,10 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  const Section = ({ title, children }: any) => (
+  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <section className="card p-6 sm:p-8">
       <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="mt-3 prose prose-invert prose-sm sm:prose-base max-w-none">
-        {children}
-      </div>
+      <div className="mt-3 prose prose-invert prose-sm sm:prose-base max-w-none">{children}</div>
     </section>
   );
 
@@ -18,9 +16,7 @@ export default function PrivacyPage() {
     <main className="container-px py-10 space-y-6">
       <header className="card bg-hero border-none text-white p-6 sm:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold">Kebijakan Privasi</h1>
-        <p className="mt-2 text-white/90">
-          Berlaku efektif: 01 Januari 2025
-        </p>
+        <p className="mt-2 text-white/90">Berlaku efektif: 01 Januari 2025</p>
       </header>
 
       <Section title="Data yang Kami Kumpulkan">

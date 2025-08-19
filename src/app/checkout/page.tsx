@@ -1,4 +1,3 @@
-// src/app/checkout/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -108,10 +107,12 @@ export default function CheckoutPage() {
     try {
       const raw = localStorage.getItem("cart");
       if (raw) {
-        const arr: CartItem[] = JSON.parse(raw);
-        if (Array.isArray(arr) && arr.length) setItem(arr[arr.length - 1]);
+        const arr = JSON.parse(raw) as CartItem[];
+        if (Array.isArray(arr) && arr.length) setItem(arr[arr.length - 1] ?? null);
       }
-    } catch {}
+    } catch {
+      /* ignore localStorage error */
+    }
   }, [q]);
 
   const [playerId, setPlayerId] = useState("");
@@ -152,33 +153,38 @@ export default function CheckoutPage() {
           contact,
         }),
       });
-      if (!res.ok) throw new Error((await res.text()) || "Gagal membuat pesanan");
-      const data = await res.json();
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Gagal membuat pesanan");
+      }
+      const data: { payment_url?: string; id?: string } = await res.json();
 
       try {
         localStorage.setItem("cart", JSON.stringify([]));
         window.dispatchEvent(new StorageEvent("storage", { key: "cart" }));
-      } catch {}
+      } catch {
+        /* ignore */
+      }
 
       setStatus("success");
       if (data?.payment_url) window.location.href = data.payment_url;
       else router.push(`/checkout?success=1&order=${encodeURIComponent(data?.id ?? "")}`);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Terjadi kesalahan";
       setStatus("error");
-      setError(e?.message ?? "Terjadi kesalahan");
+      setError(message);
     }
   }
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
-      {/* Ganti stepper: judul sederhana */}
       <header className="mb-6">
         <h1 className="text-lg font-semibold">Checkout</h1>
         <p className="text-sm text-white/60">Isi data akun, pilih metode bayar, lalu selesaikan pembayaran.</p>
       </header>
 
       <div className="grid gap-5 md:grid-cols-[2fr,1fr]">
-        {/* Kiri */}
         <div className="space-y-5">
           <Section title="Detail Pesanan">
             {item ? (
@@ -283,7 +289,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Kanan */}
         <aside className="space-y-5">
           <Section title="Ringkasan Pembayaran">
             <div className="space-y-2 text-sm">
@@ -303,13 +308,13 @@ export default function CheckoutPage() {
             </div>
           </Section>
 
-          <Section title="Tips">
-            <ul className="list-disc space-y-2 pl-4 text-xs text-white/60">
-              <li>Pastikan **Player ID** & **Server** benar sebelum bayar.</li>
-              <li>Proses biasanya <strong>&lt; 1 menit</strong> setelah pembayaran.</li>
-              <li>Simpan bukti bayar. Kendala? buka menu <strong>Bantuan</strong>.</li>
-            </ul>
-          </Section>
+            <Section title="Tips">
+              <ul className="list-disc space-y-2 pl-4 text-xs text-white/60">
+                <li>Pastikan <strong>Player ID</strong> & <strong>Server</strong> benar sebelum bayar.</li>
+                <li>Proses biasanya <strong>&lt; 1 menit</strong> setelah pembayaran.</li>
+                <li>Simpan bukti bayar. Kendala? buka menu <strong>Bantuan</strong>.</li>
+              </ul>
+            </Section>
         </aside>
       </div>
     </div>

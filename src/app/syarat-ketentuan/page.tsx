@@ -5,12 +5,10 @@ export const metadata = {
 };
 
 export default function TermsPage() {
-  const Section = ({ title, children }: any) => (
+  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <section className="card p-6 sm:p-8">
       <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="mt-3 prose prose-invert prose-sm sm:prose-base max-w-none">
-        {children}
-      </div>
+      <div className="mt-3 prose prose-invert prose-sm sm:prose-base max-w-none">{children}</div>
     </section>
   );
 

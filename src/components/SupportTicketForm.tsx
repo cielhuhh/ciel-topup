@@ -25,11 +25,10 @@ export default function SupportTicketForm() {
       desc: String(raw.desc || ""),
     };
 
-    // gunakan variabel agar linter tidak menganggap "unused"
-    // eslint-disable-next-line no-console
+    // Log sederhana agar variabel terpakai & memudahkan debug dev
     console.log("[support-ticket] submit", data);
 
-    // TODO: kirim ke endpoint kamu di sini:
+    // TODO: kirim ke endpoint kamu di sini
     // await fetch("/api/tickets", { method: "POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
 
     setTimeout(() => {
@@ -63,7 +62,7 @@ export default function SupportTicketForm() {
         <button type="submit" disabled={submitting} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60">
           {submitting ? "Mengirim..." : "Kirim Tiket"}
         </button>
-        <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className="rounded-xl border px-4 py-2 text-sm shadow-sm transition hover:shadow dark:border-neutral-700">
+        <a href="https://wa.me/6285854080571" target="_blank" rel="noreferrer" className="rounded-xl border px-4 py-2 text-sm shadow-sm transition hover:shadow dark:border-neutral-700">
           Chat WhatsApp
         </a>
       </div>
