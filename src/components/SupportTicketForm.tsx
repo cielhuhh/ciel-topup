@@ -25,8 +25,12 @@ export default function SupportTicketForm() {
       desc: String(raw.desc || ""),
     };
 
-    // TODO: kirim ke endpoint kamu
-    // await fetch("/api/tickets", { method: "POST", headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    // gunakan variabel agar linter tidak menganggap "unused"
+    // eslint-disable-next-line no-console
+    console.log("[support-ticket] submit", data);
+
+    // TODO: kirim ke endpoint kamu di sini:
+    // await fetch("/api/tickets", { method: "POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
 
     setTimeout(() => {
       setSubmitting(false);
@@ -40,53 +44,26 @@ export default function SupportTicketForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium">Nama</label>
-          <input
-            name="name"
-            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-            required
-          />
+          <input name="name" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Email / WhatsApp</label>
-          <input
-            name="contact"
-            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-            required
-          />
+          <input name="contact" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
         </div>
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">Nomor Pesanan (opsional)</label>
-          <input
-            name="orderId"
-            placeholder="CTU-2025-XXXX"
-            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-          />
+          <input name="orderId" placeholder="CTU-2025-XXXX" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" />
         </div>
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">Deskripsi Kendala</label>
-          <textarea
-            name="desc"
-            rows={4}
-            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-            required
-          />
+          <textarea name="desc" rows={4} className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
         </div>
       </div>
       <div className="mt-4 flex gap-3">
-        <button
-          type="submit"
-          disabled={submitting}
-          aria-busy={submitting}
-          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60"
-        >
+        <button type="submit" disabled={submitting} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60">
           {submitting ? "Mengirim..." : "Kirim Tiket"}
         </button>
-        <a
-          href="https://wa.me/6281234567890"
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-xl border px-4 py-2 text-sm shadow-sm transition hover:shadow dark:border-neutral-700"
-        >
+        <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className="rounded-xl border px-4 py-2 text-sm shadow-sm transition hover:shadow dark:border-neutral-700">
           Chat WhatsApp
         </a>
       </div>

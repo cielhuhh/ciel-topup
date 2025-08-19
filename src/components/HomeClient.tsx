@@ -2,23 +2,23 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { games } from "@/lib/games";
 import { Search, Sparkles, Flame, Filter, X, ShieldCheck, BadgeCheck } from "lucide-react";
 import DenomSelector from "./DenomSelector";
 import TrustBar from "./TrustBar";
 
-/** ---------- Safe helpers ---------- */
 type Game = (typeof games)[number];
+type SortKey = "popular" | "az" | "newest";
 
+/* Safe getters */
 function getAliasesSafe(g: Game): string[] {
-  const anyG = g as any;
-  if (Array.isArray(anyG.alias)) return anyG.alias as string[];
-  if (Array.isArray(anyG.aliases)) return anyG.aliases as string[];
-  return [];
+  const alias = (g as unknown as { alias?: unknown }).alias;
+  const aliases = (g as unknown as { aliases?: unknown }).aliases;
+  const source = Array.isArray(alias) ? alias : Array.isArray(aliases) ? aliases : [];
+  return (source as unknown[]).filter((x): x is string => typeof x === "string");
 }
 function getUpdatedAtSafe(g: Game): number {
-  const v = (g as any).updatedAt as number | string | undefined;
+  const v = (g as unknown as { updatedAt?: unknown }).updatedAt;
   if (typeof v === "number") return v;
   if (typeof v === "string") {
     const ts = Date.parse(v);
@@ -27,18 +27,17 @@ function getUpdatedAtSafe(g: Game): number {
   return 0;
 }
 function getTagsSafe(g: Game): string[] {
-  const anyG = g as any;
-  if (Array.isArray(anyG.tags)) return anyG.tags as string[];
+  const t = (g as unknown as { tags?: unknown }).tags;
+  if (Array.isArray(t)) return (t as unknown[]).filter((x): x is string => typeof x === "string");
   return [];
 }
 
 const TAGS_ALWAYS = ["populer", "resmi"];
 
 export default function HomeClient() {
-  const router = useRouter();
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string | null>(null);
-  const [sort, setSort] = useState<"popular" | "az" | "newest">("popular");
+  const [sort, setSort] = useState<SortKey>("popular");
   const [selected, setSelected] = useState<Game | null>(null);
   const [toast, setToast] = useState<{ title: string; message?: string } | null>(null);
 
@@ -78,7 +77,7 @@ export default function HomeClient() {
 
   return (
     <>
-      {/* HERO */}
+      {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl border bg-white/60 p-8 shadow-sm backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60">
         <div className="relative z-10">
           <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
@@ -120,7 +119,7 @@ export default function HomeClient() {
               <label className="hidden text-sm text-neutral-500 sm:block">Urutkan</label>
               <select
                 value={sort}
-                onChange={(e) => setSort(e.target.value as "popular" | "az" | "newest")}
+                onChange={(e) => setSort(e.target.value as SortKey)}
                 className="rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
               >
                 <option value="popular">Paling Populer</option>
@@ -137,7 +136,7 @@ export default function HomeClient() {
             </span>
             <button
               onClick={() => setTag(null)}
-              className={`rounded-xl px-3 py-2 text-xs font-medium transition ${
+              className={`rounded-XL px-3 py-2 text-xs font-medium transition ${
                 tag === null ? "bg-indigo-600 text-white shadow-sm" : "border bg-white/70 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/70"
               }`}
             >
@@ -162,10 +161,11 @@ export default function HomeClient() {
         <div aria-hidden className="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
       </section>
 
-      {/* Trust bar */}
-      <div className="mt-6"><TrustBar sticky={false} /></div>
+      <div className="mt-6">
+        <TrustBar sticky={false} />
+      </div>
 
-      {/* GRID */}
+      {/* Grid */}
       <section className="mt-6">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{tag ? `Kategori: ${tag}` : "Semua Game"}</h2>
@@ -217,25 +217,15 @@ export default function HomeClient() {
         )}
       </section>
 
-      {/* MODAL DENOM */}
+      {/* Modal Denom */}
       {selected && (
         <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setSelected(null)}>
           <div className="w-full max-w-2xl rounded-2xl border bg-white p-4 shadow-2xl ring-1 ring-black/5 dark:border-neutral-800 dark:bg-neutral-900" onClick={(e) => e.stopPropagation()}>
-            <DenomSelector
-              gameId={selected.id}
-              onClose={() => setSelected(null)}
-              onToast={(t) => setToast(t)}
-              onSelect={({ game, denom }) => {
-                const slug = game.slug || game.id;
-                const qs = new URLSearchParams({ game: String(slug), code: denom.code });
-                router.push(`/checkout?${qs.toString()}`);
-              }}
-            />
+            <DenomSelector gameId={selected.id} onClose={() => setSelected(null)} onToast={(t) => setToast(t)} />
           </div>
         </div>
       )}
 
-      {/* TOAST */}
       {toast && (
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
           <div className="rounded-xl bg-neutral-900 px-4 py-2 text-sm text-white shadow-lg">{toast.title}</div>

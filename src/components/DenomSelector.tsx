@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { games } from "@/lib/games";
 
-/** ===== Types ===== */
 type Toast = { title: string; desc?: string };
 type GroupKey = "topup" | "pass";
 
@@ -15,9 +14,9 @@ type Denom = {
 };
 
 type GameItem = {
-  id: string;          // atau slug — sesuaikan dengan lib/games.ts
+  id: string;
   slug?: string;
-  title?: string;      // beberapa list pakai name, beberapa pakai title
+  title?: string;
   name?: string;
   image?: string;
   denoms: Denom[];
@@ -27,10 +26,9 @@ type Props = {
   gameId: string;
   onSelect?: (payload: { game: GameItem; denom: Denom }) => void;
   onClose?: () => void;
-  onToast?: (t: Toast) => void; // <— tambahan agar cocok dengan HomeClient
+  onToast?: (t: Toast) => void;
 };
 
-/** ===== Helpers ===== */
 const toIDR = (n: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -38,43 +36,29 @@ const toIDR = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-/** Klasifikasi otomatis berdasarkan label */
 function classify(label: string): GroupKey {
   const s = label.toLowerCase();
-  if (
-    s.includes("pass") ||
+  return s.includes("pass") ||
     s.includes("starlight") ||
     s.includes("member") ||
     s.includes("weekly") ||
     s.includes("welkin") ||
     s.includes("blessing")
-  ) {
-    return "pass";
-  }
-  return "topup";
+    ? "pass"
+    : "topup";
 }
 
-/** ===== Component ===== */
 export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Props) {
   const [activeTab, setActiveTab] = useState<GroupKey>("topup");
   const [selected, setSelected] = useState<Denom | null>(null);
   const [localToast, setLocalToast] = useState<Toast | null>(null);
 
-  const pushToast = useCallback(
-    (t: Toast) => {
-      if (onToast) onToast(t);
-      else setLocalToast(t);
-    },
-    [onToast]
-  );
+  const pushToast = useCallback((t: Toast) => (onToast ? onToast(t) : setLocalToast(t)), [onToast]);
 
-  // cari game by id/slug
   const game: GameItem | undefined = useMemo(() => {
-    const list = games as unknown as GameItem[];
-    return list.find((g) => g.id === gameId || g.slug === gameId);
+    return (games as unknown as GameItem[]).find((g) => g.id === gameId || g.slug === gameId);
   }, [gameId]);
 
-  // bagi denom ke grup
   const groups = useMemo(() => {
     const list = game?.denoms ?? [];
     return {
@@ -84,7 +68,6 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
   }, [game]);
 
   useEffect(() => {
-    // reset saat ganti game
     setSelected(null);
     setActiveTab("topup");
   }, [gameId]);
@@ -94,11 +77,9 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
       pushToast({ title: "Pilih salah satu denom terlebih dahulu." });
       return;
     }
-
     if (onSelect) {
       onSelect({ game, denom: selected });
     } else {
-      // default behaviour: navigate ke checkout
       const slug = game.slug || game.id;
       const qs = new URLSearchParams({ game: String(slug), code: selected.code });
       window.location.href = `/checkout?${qs.toString()}`;
@@ -106,13 +87,7 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
     onClose?.();
   }, [game, selected, onSelect, onClose, pushToast]);
 
-  if (!game) {
-    return (
-      <div className="p-6">
-        <p className="text-sm opacity-70">Game tidak ditemukan.</p>
-      </div>
-    );
-  }
+  if (!game) return <div className="p-6 text-sm opacity-70">Game tidak ditemukan.</div>;
 
   const title = game.title ?? game.name ?? "Game";
 
@@ -158,9 +133,7 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
               }`}
             >
               <div className="font-medium">{d.label}</div>
-              {typeof d.amount === "number" && (
-                <div className="text-xs opacity-70">{d.amount} unit</div>
-              )}
+              {typeof d.amount === "number" && <div className="text-xs opacity-70">{d.amount} unit</div>}
               <div className="mt-1 font-semibold">{toIDR(d.price)}</div>
             </button>
           );
@@ -175,28 +148,27 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
         <div className="text-sm opacity-80">
           {selected ? (
             <>
-              <span className="opacity-70">Dipilih:</span>{" "}
-              <span className="font-medium">{selected.label}</span> ·{" "}
+              <span className="opacity-70">Dipilih:</span> <span className="font-medium">{selected.label}</span> ·{" "}
               <span className="font-semibold">{toIDR(selected.price)}</span>
             </>
           ) : (
             "Belum ada denom dipilih"
           )}
         </div>
-        <button onClick={submit} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500">
+        <button
+          onClick={submit}
+          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500"
+        >
           Lanjutkan
         </button>
       </div>
 
-      {/* Fallback toast lokal (dipakai jika onToast tidak diberikan) */}
+      {/* Fallback toast lokal */}
       {localToast && (
         <div className="fixed bottom-4 right-4 rounded-xl border bg-card px-4 py-2 shadow">
           <div className="text-sm font-medium">{localToast.title}</div>
           {localToast.desc && <div className="text-xs opacity-70">{localToast.desc}</div>}
-          <button
-            className="mt-2 text-xs opacity-70 hover:opacity-100"
-            onClick={() => setLocalToast(null)}
-          >
+          <button className="mt-2 text-xs opacity-70 hover:opacity-100" onClick={() => setLocalToast(null)}>
             Tutup
           </button>
         </div>

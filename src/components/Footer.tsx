@@ -1,6 +1,6 @@
 // src/components/Footer.tsx
 import Link from "next/link";
-import { Mail, Phone, MessageCircle, ExternalLink, Github, Twitter } from "lucide-react";
+import { Mail, Phone, MessageCircle, ExternalLink, Github,  } from "lucide-react";
 
 const quickLinks = [
   { href: "/", label: "Beranda" },
