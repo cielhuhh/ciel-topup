@@ -25,23 +25,18 @@ export default function SupportTicketForm() {
       desc: String(raw.desc || ""),
     };
 
-    // Pakai data agar tidak "unused" dan tetap berguna:
-    await fetch("/api/tickets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }).catch(() => { /* ignore error on demo */ });
+    // TODO: kirim ke endpoint kamu
+    // await fetch("/api/tickets", { method: "POST", headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
 
-    setSubmitting(false);
-    form.reset();
-    alert("Tiket terkirim! Tim kami akan menghubungi Anda segera.");
+    setTimeout(() => {
+      setSubmitting(false);
+      form.reset();
+      alert("Tiket terkirim! Tim kami akan menghubungi Anda segera.");
+    }, 600);
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="rounded-2xl border bg-white/60 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60"
-    >
+    <form onSubmit={onSubmit} className="rounded-2xl border bg-white/60 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium">Nama</label>
@@ -81,6 +76,7 @@ export default function SupportTicketForm() {
         <button
           type="submit"
           disabled={submitting}
+          aria-busy={submitting}
           className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60"
         >
           {submitting ? "Mengirim..." : "Kirim Tiket"}
