@@ -61,19 +61,14 @@ export default function DenomSelector({ gameId, onSelect, onClose, onToast }: Pr
 
   return (
     <div className="w-full max-w-3xl">
-      <header className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold">Pilih Denom</h2>
-          <p className="flex items-center gap-1 text-sm opacity-75">
-            <BadgeCheck className="h-4 w-4 text-emerald-500" /> {title}
-          </p>
-        </div>
-        {onClose && (
-          <button onClick={onClose} className="rounded-xl border px-3 py-2 text-sm transition hover:bg-foreground/5">
-            Tutup
-          </button>
-        )}
-      </header>
+<header className="mb-4 flex items-center justify-between gap-3">
+  <div>
+    <h2 className="text-lg font-semibold">Pilih Denom</h2>
+    <p className="flex items-center gap-1 text-sm opacity-75">
+      <BadgeCheck className="h-4 w-4 text-emerald-500" /> {title}
+    </p>
+  </div>
+</header>
 
       <div role="tablist" aria-label="Kategori denom" className="mb-4 inline-flex overflow-hidden rounded-xl border bg-card p-1">
         {(["topup", "pass"] as const).map((tab) => {
