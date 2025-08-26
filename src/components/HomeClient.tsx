@@ -139,14 +139,21 @@ export default function HomeClient() {
               <Flame className="mr-1 h-4 w-4" /> Urut:
             </div>
             <select
-              className="rounded-lg border bg-background/60 px-3 py-2 text-sm ring-1 ring-black/5 [color-scheme:dark]"
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-            >
-              <option value="popular">Terpopuler</option>
-              <option value="az">A → Z</option>
-              <option value="newest">Terbaru</option>
-            </select>
+  value={sort}
+  onChange={(e) => setSort(e.target.value as SortKey)}
+  // kontrolnya sendiri
+  className="rounded-lg border bg-background/60 px-3 py-2 text-sm ring-1 ring-black/5
+             [color-scheme:dark] text-white shadow-sm
+             // paksa gaya untuk daftar opsi:
+             [&>option]:bg-neutral-900 [&>option]:text-white
+             dark:[&>option]:bg-neutral-900 dark:[&>option]:text-white"
+  style={{ colorScheme: "dark" }}
+>
+  <option className="bg-neutral-900 text-white" value="popular">Terpopuler</option>
+  <option className="bg-neutral-900 text-white" value="az">A → Z</option>
+  <option className="bg-neutral-900 text-white" value="newest">Terbaru</option>
+</select>
+
           </div>
 
           {/* Kanan: chip tags */}
