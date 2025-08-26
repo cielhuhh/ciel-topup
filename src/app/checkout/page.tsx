@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, CreditCard, Loader2, QrCode, ShieldCheck, Wallet2 } from "lucide-react";
 import clsx from "clsx";
@@ -17,11 +17,7 @@ type CartItem = {
 };
 
 function currency(n: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(n);
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -87,7 +83,37 @@ function MethodCard({
   );
 }
 
+/* ========= Page wrapper: Suspense boundary for useSearchParams ========= */
 export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+          <header className="mb-6">
+            <h1 className="text-lg font-semibold">Checkout</h1>
+            <p className="text-sm text-white/60">Memuat…</p>
+          </header>
+          <div className="grid gap-5 md:grid-cols-[2fr,1fr]">
+            <div className="space-y-5">
+              <div className="h-28 animate-pulse rounded-2xl bg-white/5" />
+              <div className="h-40 animate-pulse rounded-2xl bg-white/5" />
+              <div className="h-28 animate-pulse rounded-2xl bg-white/5" />
+            </div>
+            <aside className="space-y-5">
+              <div className="h-40 animate-pulse rounded-2xl bg-white/5" />
+              <div className="h-28 animate-pulse rounded-2xl bg-white/5" />
+            </aside>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutInner />
+    </Suspense>
+  );
+}
+
+/* ========= Inner component: berisi logic yang pakai useSearchParams ========= */
+function CheckoutInner() {
   const router = useRouter();
   const q = useSearchParams();
 
@@ -185,15 +211,147 @@ export default function CheckoutPage() {
     <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
       <header className="mb-6">
         <h1 className="text-lg font-semibold">Checkout</h1>
-        <p className="text-sm text-white/60">
-          Isi data akun, pilih metode bayar, lalu selesaikan pembayaran.
-        </p>
+        <p className="text-sm text-white/60">Isi data akun, pilih metode bayar, lalu selesaikan pembayaran.</p>
       </header>
 
       <div className="grid gap-5 md:grid-cols-[2fr,1fr]">
         <div className="space-y-5">
-          {/* ... Bagian lain sama seperti kode kamu */}
+          <Section title="Detail Pesanan">
+            {item ? (
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="text-sm text-white/60">Game</div>
+                  <div className="font-medium">{item.gameName}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-white/60">Paket</div>
+                  <div className="font-medium">{item.denomLabel}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-white/60">Harga</div>
+                  <div className="font-semibold">{currency(item.price)}</div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-white/60">Keranjang kosong. Kembali ke beranda untuk memilih paket.</div>
+            )}
+          </Section>
+
+          <Section title="Data Akun">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                label="Player ID"
+                placeholder="contoh: 123456789(1234)"
+                value={playerId}
+                onChange={(e) => setPlayerId(e.target.value)}
+              />
+              <Field
+                label="Server/Region (opsional)"
+                placeholder="contoh: Asia / 2150"
+                value={server}
+                onChange={(e) => setServer(e.target.value)}
+              />
+              <Field
+                label="Kontak (opsional)"
+                placeholder="Email / WhatsApp untuk bukti bayar"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                className="sm:col-span-2"
+              />
+            </div>
+          </Section>
+
+          <Section title="Metode Pembayaran">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <MethodCard
+                active={payment === "qris"}
+                icon={QrCode}
+                title="QRIS"
+                desc="Scan semua e-wallet/bank"
+                onClick={() => setPayment("qris")}
+              />
+              <MethodCard
+                active={payment === "ewallet"}
+                icon={Wallet2}
+                title="E-Wallet"
+                desc="OVO / Dana / GoPay / ShopeePay"
+                onClick={() => setPayment("ewallet")}
+              />
+              <MethodCard
+                active={payment === "va"}
+                icon={CreditCard}
+                title="Virtual Account"
+                desc="BCA / BNI / Mandiri / dll"
+                onClick={() => setPayment("va")}
+              />
+            </div>
+          </Section>
+
+          {error ? (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{error}</div>
+          ) : null}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="inline-flex items-center gap-2 text-xs text-white/50">
+              <ShieldCheck className="h-4 w-4" />
+              Pembayaran aman. Otomatis & bisa refund jika gagal.
+            </div>
+            <button
+              onClick={submit}
+              disabled={status === "loading" || !item}
+              className={clsx(
+                "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium",
+                "bg-indigo-600 text-white shadow transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+              )}
+            >
+              {status === "loading" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Memproses...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4" />
+                  Bayar Sekarang
+                </>
+              )}
+            </button>
+          </div>
         </div>
+
+        <aside className="space-y-5">
+          <Section title="Ringkasan Pembayaran">
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span>Harga</span>
+                <span>{item ? currency(item.price) : "-"}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Biaya {payment.toUpperCase()}</span>
+                <span>{item ? currency(fee) : "-"}</span>
+              </div>
+              <div className="my-2 border-t border-white/10" />
+              <div className="flex items-center justify-between text-base font-semibold">
+                <span>Total</span>
+                <span>{item ? currency(total) : "-"}</span>
+              </div>
+            </div>
+          </Section>
+
+          <Section title="Tips">
+            <ul className="list-disc space-y-2 pl-4 text-xs text-white/60">
+              <li>
+                Pastikan <strong>Player ID</strong> & <strong>Server</strong> benar sebelum bayar.
+              </li>
+              <li>
+                Proses biasanya <strong>&lt; 1 menit</strong> setelah pembayaran.
+              </li>
+              <li>
+                Simpan bukti bayar. Kendala? buka menu <strong>Bantuan</strong>.
+              </li>
+            </ul>
+          </Section>
+        </aside>
       </div>
     </div>
   );
