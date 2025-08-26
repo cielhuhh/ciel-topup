@@ -10,7 +10,7 @@ import TrustBar from "./TrustBar";
 type Game = (typeof games)[number];
 type SortKey = "popular" | "az" | "newest";
 
-/* ---------- Safe getters: TIDAK pakai any ---------- */
+/* ---------- Safe getters: TANPA any ---------- */
 function getAliasesSafe(g: Game): string[] {
   const alias = (g as unknown as { alias?: unknown }).alias;
   const aliases = (g as unknown as { aliases?: unknown }).aliases;
@@ -30,6 +30,15 @@ function getTagsSafe(g: Game): string[] {
   const t = (g as unknown as { tags?: unknown }).tags;
   if (Array.isArray(t)) return (t as unknown[]).filter((x): x is string => typeof x === "string");
   return [];
+}
+
+/* ---------- Image helper: cegah crash ---------- */
+const FALLBACK_IMG =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nNDAwJyBoZWlnaHQ9JzMwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjMTIxMjEyJy8+PC9zdmc+";
+
+function getImageSafe(g: Game): string {
+  const v = (g as unknown as { image?: unknown }).image;
+  return typeof v === "string" && v.trim().length > 0 ? v : FALLBACK_IMG;
 }
 
 const TAGS_ALWAYS = ["populer", "resmi"];
@@ -70,14 +79,14 @@ export default function HomeClient() {
         rows.sort((a, b) => getUpdatedAtSafe(b) - getUpdatedAtSafe(a));
         break;
       default:
-        break; // "popular" = urutan default dari data
+        break;
     }
     return rows;
   }, [query, tag, sort]);
 
   return (
     <div className="space-y-6">
-      {/* ---------- HERO: aman, cepat, terpercaya ---------- */}
+      {/* ---------- HERO ---------- */}
       <section className="relative overflow-hidden rounded-2xl border bg-[radial-gradient(120%_120%_at_0%_0%,rgba(99,102,241,.25),transparent_60%),linear-gradient(to_bottom_right,rgba(0,0,0,.35),rgba(0,0,0,.15))] p-5 sm:p-7">
         <div className="pointer-events-none absolute inset-0 opacity-[.07] [background-image:linear-gradient(#fff1_1px,transparent_1px),linear-gradient(90deg,#fff1_1px,transparent_1px)]; [background-size:24px_24px]" />
         <div className="relative">
@@ -95,7 +104,7 @@ export default function HomeClient() {
             dan Anda dapat memantau statusnya real-time.
           </p>
 
-          {/* search besar (tetap nyambung ke state query) */}
+          {/* search besar (terhubung state query) */}
           <div className="mt-4 flex gap-2">
             <div className="flex flex-1 items-center gap-2 rounded-xl border bg-background/60 px-3 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-indigo-500">
               <Search className="h-4 w-4 opacity-60" />
@@ -121,10 +130,10 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ---------- Highlight kepercayaan ---------- */}
+      {/* ---------- Trust row ---------- */}
       <TrustBar />
 
-      {/* ---------- Search + Sort + Tag filter (struktur lama tetap) ---------- */}
+      {/* ---------- Search + Sort + Tag filter ---------- */}
       <section className="rounded-2xl border bg-card/80 p-4 backdrop-blur">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-1 items-center gap-2 rounded-xl border bg-background/60 px-3 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-indigo-500">
@@ -157,7 +166,6 @@ export default function HomeClient() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {/* Tag "All" biar gampang balik */}
               <button
                 onClick={() => setTag(null)}
                 className={`rounded-lg px-2.5 py-1 text-xs transition ${
@@ -208,40 +216,49 @@ export default function HomeClient() {
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((g) => (
-              <button
-                key={g.id}
-                onClick={() => setSelected(g)}
-                className="group overflow-hidden rounded-2xl border bg-card text-left transition hover:-translate-y-0.5 hover:shadow"
-              >
-                <div className="relative aspect-[4/3] bg-neutral-100 dark:bg-neutral-900">
-                  <Image
-                    alt={g.name}
-                    src={g.image}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                  />
-                  <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-lg bg-black/55 px-2 py-1 text-[10px] font-medium text-white backdrop-blur group-hover:bg-black/60">
-                    <Sparkles className="h-3 w-3" /> Resmi
-                  </span>
-                </div>
-                <div className="p-3">
-                  <div className="line-clamp-1 text-sm font-semibold">{g.name}</div>
-                  <div className="mt-1 line-clamp-1 text-xs text-neutral-500">Klik untuk pilih denom</div>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {getTagsSafe(g).slice(0, 3).map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-md border px-2 py-0.5 text-[10px] capitalize text-neutral-600 dark:border-neutral-800 dark:text-neutral-300"
-                      >
-                        {t}
-                      </span>
-                    ))}
+            {filtered.map((g, idx) => {
+              const imgSrc = getImageSafe(g);
+              return (
+                <button
+                  key={g.id}
+                  onClick={() => setSelected(g)}
+                  className="group overflow-hidden rounded-2xl border bg-card text-left transition hover:-translate-y-0.5 hover:shadow"
+                >
+                  <div className="relative aspect-[4/3] bg-neutral-100 dark:bg-neutral-900">
+                    <Image
+                      alt={g.name}
+                      src={imgSrc}
+                      fill
+                      /* ✅ wajib utk `fill` */
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      /* ✅ aman untuk domain yang belum di-allow saat ini */
+                      unoptimized
+                      /* perf kecil untuk beberapa item awal */
+                      priority={idx < 2}
+                      loading={idx < 2 ? "eager" : "lazy"}
+                      className="object-cover"
+                    />
+                    <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-lg bg-black/55 px-2 py-1 text-[10px] font-medium text-white backdrop-blur group-hover:bg-black/60">
+                      <Sparkles className="h-3 w-3" /> Resmi
+                    </span>
                   </div>
-                </div>
-              </button>
-            ))}
+                  <div className="p-3">
+                    <div className="line-clamp-1 text-sm font-semibold">{g.name}</div>
+                    <div className="mt-1 line-clamp-1 text-xs text-neutral-500">Klik untuk pilih denom</div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {getTagsSafe(g).slice(0, 3).map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-md border px-2 py-0.5 text-[10px] capitalize text-neutral-600 dark:border-neutral-800 dark:text-neutral-300"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </section>
