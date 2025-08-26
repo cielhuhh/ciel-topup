@@ -76,124 +76,91 @@ export default function HomeClient() {
   }, [query, tag, sort]);
 
   return (
-    <>
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl border bg-white/60 p-8 shadow-sm backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60">
-        <div className="relative z-10">
-          <p className="text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            Aman • Cepat • Real-time
-          </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Top Up Game{" "}
-            <span className="bg-gradient-to-r from-indigo-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">
-              Cepat, Aman,
-            </span>{" "}
-            dan <span className="text-sky-400">Terpercaya</span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-neutral-600 dark:text-neutral-300">
-            Pilih game, tentukan denom, bayar dengan QRIS/E-Wallet/VA. Garansi pesanan & pelacakan status otomatis.
-          </p>
+    <div className="space-y-6">
+      {/* Search + Filter */}
+      <section className="rounded-2xl border bg-card/80 p-4 backdrop-blur">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-1 items-center gap-2 rounded-xl border bg-background/60 px-3 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-indigo-500">
+            <Search className="h-4 w-4 opacity-60" />
+            <input
+              placeholder="Cari game / tag (mis. mlbb, genshin, resmi)"
+              className="w-full bg-transparent text-sm outline-none"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
 
-          {/* Search + Sort */}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <div className="relative min-w-[260px] flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Cari game: Mobile Legends, FF, Genshin…"
-                className="w-full rounded-2xl border bg-white/70 py-2 pl-10 pr-4 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-              />
-              {query && (
+          <div className="flex items-center gap-2">
+            <div className="hidden text-xs opacity-70 sm:inline-flex">
+              <Flame className="mr-1 h-4 w-4" /> Urut:
+            </div>
+            <select
+              className="rounded-lg border bg-background/60 px-3 py-2 text-sm ring-1 ring-black/5"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+            >
+              <option value="popular">Terpopuler</option>
+              <option value="az">A → Z</option>
+              <option value="newest">Terbaru</option>
+            </select>
+            <div className="hidden items-center gap-1 rounded-lg border bg-background/60 px-3 py-2 text-xs ring-1 ring-black/5 sm:flex">
+              <Filter className="h-4 w-4" />
+              Filter:
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((t) => {
+                const active = t === tag;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTag(active ? null : t)}
+                    className={`rounded-lg px-2.5 py-1 text-xs transition ${
+                      active
+                        ? "bg-indigo-600 text-white shadow ring-1 ring-indigo-400"
+                        : "border bg-background/60 ring-1 ring-black/5 hover:bg-foreground/5"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+              {tag && (
                 <button
-                  onClick={() => setQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5"
-                  aria-label="Clear search"
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs ring-1 ring-black/5 hover:bg-foreground/5"
+                  onClick={() => setTag(null)}
+                  aria-label="Hapus filter"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" /> Reset
                 </button>
               )}
             </div>
-
-            <div className="flex items-center gap-2">
-              <label className="hidden text-sm text-neutral-500 sm:block">Urutkan</label>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                className="rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
-              >
-                <option value="popular">Paling Populer</option>
-                <option value="az">A → Z</option>
-                <option value="newest">Update Terbaru</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Tag Filter */}
-          <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1">
-            <span className="inline-flex items-center gap-2 rounded-xl border bg-white/70 px-3 py-2 text-xs font-medium shadow-sm dark:border-neutral-800 dark:bg-neutral-900/70">
-              <Filter className="h-4 w-4" /> Filter
-            </span>
-            <button
-              onClick={() => setTag(null)}
-              className={`rounded-XL px-3 py-2 text-xs font-medium transition ${
-                tag === null ? "bg-indigo-600 text-white shadow-sm" : "border bg-white/70 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/70"
-              }`}
-            >
-              All
-            </button>
-            {tags.map((t) => (
-              <button
-                key={t}
-                onClick={() => setTag(t)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium capitalize transition ${
-                  tag === t ? "bg-indigo-600 text-white shadow-sm" : "border bg-white/70 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/70"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
           </div>
         </div>
-
-        {/* Glows */}
-        <div aria-hidden className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
       </section>
 
-      <div className="mt-6">
-        <TrustBar sticky={false} />
-      </div>
+      {/* Trust row */}
+      <TrustBar />
 
-      {/* Grid */}
-      <section className="mt-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{tag ? `Kategori: ${tag}` : "Semua Game"}</h2>
-          <div className="flex items-center gap-3 text-xs text-neutral-500">
-            <div className="inline-flex items-center gap-1"><ShieldCheck className="h-4 w-4" /> Garansi Pesanan</div>
-            <div className="inline-flex items-center gap-1"><BadgeCheck className="h-4 w-4" /> Resmi</div>
-            <div className="inline-flex items-center gap-1"><Flame className="h-4 w-4" /> {filtered.length} judul</div>
-          </div>
-        </div>
-
+      {/* Grid games */}
+      <section>
         {filtered.length === 0 ? (
-          <div className="rounded-2xl border p-10 text-center text-sm text-neutral-500 dark:border-neutral-800">
-            Tidak ditemukan. Coba kata kunci lain.
+          <div className="rounded-2xl border bg-card/60 p-6 text-sm opacity-70">
+            Tidak ada game yang cocok dengan pencarian.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {filtered.map((g) => (
               <button
                 key={g.id}
                 onClick={() => setSelected(g)}
-                className="group overflow-hidden rounded-2xl border bg-white/50 text-left shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/50"
+                className="group overflow-hidden rounded-2xl border bg-card text-left transition hover:-translate-y-0.5 hover:shadow"
               >
-                <div className="relative aspect-[4/3]">
+                <div className="relative aspect-[4/3] bg-neutral-100 dark:bg-neutral-900">
                   <Image
-                    src={g.image}
                     alt={g.name}
+                    src={g.image}
                     fill
-                    className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                    className="object-cover"
                     sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   />
                   <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-lg bg-black/55 px-2 py-1 text-[10px] font-medium text-white backdrop-blur group-hover:bg-black/60">
@@ -205,7 +172,10 @@ export default function HomeClient() {
                   <div className="mt-1 line-clamp-1 text-xs text-neutral-500">Klik untuk pilih denom</div>
                   <div className="mt-2 flex flex-wrap gap-1">
                     {getTagsSafe(g).slice(0, 3).map((t) => (
-                      <span key={t} className="rounded-md border px-2 py-0.5 text-[10px] capitalize text-neutral-600 dark:border-neutral-800 dark:text-neutral-300">
+                      <span
+                        key={t}
+                        className="rounded-md border px-2 py-0.5 text-[10px] capitalize text-neutral-600 dark:border-neutral-800 dark:text-neutral-300"
+                      >
                         {t}
                       </span>
                     ))}
@@ -219,18 +189,50 @@ export default function HomeClient() {
 
       {/* Modal Denom */}
       {selected && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setSelected(null)}>
-          <div className="w-full max-w-2xl rounded-2xl border bg-white p-4 shadow-2xl ring-1 ring-black/5 dark:border-neutral-800 dark:bg-neutral-900" onClick={(e) => e.stopPropagation()}>
-            <DenomSelector gameId={selected.id} onClose={() => setSelected(null)} onToast={(t) => setToast(t)} />
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="w-full max-w-2xl rounded-2xl border bg-card p-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <div className="inline-flex items-center gap-2">
+                <BadgeCheck className="h-5 w-5 text-emerald-500" />
+                <div className="text-sm font-medium">{selected.name}</div>
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                className="rounded-lg border px-3 py-1.5 text-sm hover:bg-foreground/5"
+              >
+                Tutup
+              </button>
+            </div>
+            <DenomSelector
+              gameId={selected.id}
+              onClose={() => setSelected(null)}
+              onToast={(t) => setToast({ title: t.title, message: t.desc })}
+            />
           </div>
         </div>
       )}
 
+      {/* Toast simple */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-          <div className="rounded-xl bg-neutral-900 px-4 py-2 text-sm text-white shadow-lg">{toast.title}</div>
+        <div className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 text-sm shadow">
+          <ShieldCheck className="h-4 w-4 text-emerald-500" />
+          <div>
+            <div className="font-medium">{toast.title}</div>
+            {toast.message ? <div className="text-xs opacity-70">{toast.message}</div> : null}
+          </div>
+          <button className="ml-3 text-xs opacity-70 hover:opacity-100" onClick={() => setToast(null)}>
+            Tutup
+          </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

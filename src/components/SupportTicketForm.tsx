@@ -55,16 +55,18 @@ export default function SupportTicketForm() {
         </div>
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">Deskripsi Kendala</label>
-          <textarea name="desc" rows={4} className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
+          <textarea name="desc" rows={4} className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" />
         </div>
       </div>
-      <div className="mt-4 flex gap-3">
-        <button type="submit" disabled={submitting} className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-60">
-          {submitting ? "Mengirim..." : "Kirim Tiket"}
+
+      <div className="mt-4 flex items-center justify-end">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {submitting ? "Mengirim…" : "Kirim"}
         </button>
-        <a href="https://wa.me/6285854080571" target="_blank" rel="noreferrer" className="rounded-xl border px-4 py-2 text-sm shadow-sm transition hover:shadow dark:border-neutral-700">
-          Chat WhatsApp
-        </a>
       </div>
     </form>
   );
