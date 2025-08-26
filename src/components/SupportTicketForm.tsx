@@ -29,7 +29,11 @@ export default function SupportTicketForm() {
     console.log("[support-ticket] submit", data);
 
     // TODO: kirim ke endpoint kamu di sini
-    // await fetch("/api/tickets", { method: "POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    // await fetch("/api/tickets", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(data),
+    // });
 
     setTimeout(() => {
       setSubmitting(false);
@@ -39,23 +43,42 @@ export default function SupportTicketForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border bg-white/60 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60">
+    <form
+      onSubmit={onSubmit}
+      className="rounded-2xl border bg-white/60 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60"
+    >
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium">Nama</label>
-          <input name="name" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
+          <input
+            name="name"
+            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
+            required
+          />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Email / WhatsApp</label>
-          <input name="contact" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" required />
+          <input
+            name="contact"
+            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
+            required
+          />
         </div>
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">Nomor Pesanan (opsional)</label>
-          <input name="orderId" placeholder="CTU-2025-XXXX" className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" />
+          <input
+            name="orderId"
+            placeholder="CTU-2025-XXXX"
+            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
+          />
         </div>
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">Deskripsi Kendala</label>
-          <textarea name="desc" rows={4} className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70" />
+          <textarea
+            name="desc"
+            rows={4}
+            className="w-full rounded-xl border bg-white/70 px-3 py-2 text-sm outline-none ring-1 ring-black/5 focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-900/70"
+          />
         </div>
       </div>
 
