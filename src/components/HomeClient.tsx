@@ -10,7 +10,7 @@ import TrustBar from "./TrustBar";
 type Game = (typeof games)[number];
 type SortKey = "popular" | "az" | "newest";
 
-/* Safe getters */
+/* ---------- Safe getters: TIDAK pakai any ---------- */
 function getAliasesSafe(g: Game): string[] {
   const alias = (g as unknown as { alias?: unknown }).alias;
   const aliases = (g as unknown as { aliases?: unknown }).aliases;
@@ -70,14 +70,61 @@ export default function HomeClient() {
         rows.sort((a, b) => getUpdatedAtSafe(b) - getUpdatedAtSafe(a));
         break;
       default:
-        break; // "popular" pakai urutan default
+        break; // "popular" = urutan default dari data
     }
     return rows;
   }, [query, tag, sort]);
 
   return (
     <div className="space-y-6">
-      {/* Search + Filter */}
+      {/* ---------- HERO: aman, cepat, terpercaya ---------- */}
+      <section className="relative overflow-hidden rounded-2xl border bg-[radial-gradient(120%_120%_at_0%_0%,rgba(99,102,241,.25),transparent_60%),linear-gradient(to_bottom_right,rgba(0,0,0,.35),rgba(0,0,0,.15))] p-5 sm:p-7">
+        <div className="pointer-events-none absolute inset-0 opacity-[.07] [background-image:linear-gradient(#fff1_1px,transparent_1px),linear-gradient(90deg,#fff1_1px,transparent_1px)]; [background-size:24px_24px]" />
+        <div className="relative">
+          <span className="mb-2 inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] text-foreground/80 ring-1 ring-black/5">
+            Pembayaran aman via <strong className="mx-1">QRIS</strong> / E-Wallet / VA
+          </span>
+          <h1 className="mt-1 text-2xl font-bold leading-tight sm:text-3xl">
+            Top Up Game{" "}
+            <span className="bg-gradient-to-r from-indigo-300 via-emerald-300 to-sky-300 bg-clip-text text-transparent">
+              Cepat, Aman, dan Terpercaya
+            </span>
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm text-foreground/70">
+            Pilih game favorit, tentukan denom, isi Player ID, lalu bayar dengan QRIS. Pesanan diproses otomatis
+            dan Anda dapat memantau statusnya real-time.
+          </p>
+
+          {/* search besar (tetap nyambung ke state query) */}
+          <div className="mt-4 flex gap-2">
+            <div className="flex flex-1 items-center gap-2 rounded-xl border bg-background/60 px-3 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-indigo-500">
+              <Search className="h-4 w-4 opacity-60" />
+              <input
+                placeholder="Cari game: Mobile Legends, FF, Genshin..."
+                className="w-full bg-transparent text-sm outline-none"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            {(query || tag) && (
+              <button
+                onClick={() => {
+                  setQuery("");
+                  setTag(null);
+                }}
+                className="rounded-xl border px-3 py-2 text-sm ring-1 ring-black/5 hover:bg-foreground/5"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Highlight kepercayaan ---------- */}
+      <TrustBar />
+
+      {/* ---------- Search + Sort + Tag filter (struktur lama tetap) ---------- */}
       <section className="rounded-2xl border bg-card/80 p-4 backdrop-blur">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-1 items-center gap-2 rounded-xl border bg-background/60 px-3 py-2 ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-indigo-500">
@@ -103,11 +150,25 @@ export default function HomeClient() {
               <option value="az">A → Z</option>
               <option value="newest">Terbaru</option>
             </select>
+
             <div className="hidden items-center gap-1 rounded-lg border bg-background/60 px-3 py-2 text-xs ring-1 ring-black/5 sm:flex">
               <Filter className="h-4 w-4" />
               Filter:
             </div>
+
             <div className="flex flex-wrap gap-2">
+              {/* Tag "All" biar gampang balik */}
+              <button
+                onClick={() => setTag(null)}
+                className={`rounded-lg px-2.5 py-1 text-xs transition ${
+                  tag === null
+                    ? "bg-indigo-600 text-white shadow ring-1 ring-indigo-400"
+                    : "border bg-background/60 ring-1 ring-black/5 hover:bg-foreground/5"
+                }`}
+              >
+                All
+              </button>
+
               {tags.map((t) => {
                 const active = t === tag;
                 return (
@@ -124,6 +185,7 @@ export default function HomeClient() {
                   </button>
                 );
               })}
+
               {tag && (
                 <button
                   className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs ring-1 ring-black/5 hover:bg-foreground/5"
@@ -138,10 +200,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* Trust row */}
-      <TrustBar />
-
-      {/* Grid games */}
+      {/* ---------- Grid Games ---------- */}
       <section>
         {filtered.length === 0 ? (
           <div className="rounded-2xl border bg-card/60 p-6 text-sm opacity-70">
@@ -187,7 +246,7 @@ export default function HomeClient() {
         )}
       </section>
 
-      {/* Modal Denom */}
+      {/* ---------- Modal Denom ---------- */}
       {selected && (
         <div
           role="dialog"
@@ -220,7 +279,7 @@ export default function HomeClient() {
         </div>
       )}
 
-      {/* Toast simple */}
+      {/* ---------- Toast ---------- */}
       {toast && (
         <div className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2 text-sm shadow">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
