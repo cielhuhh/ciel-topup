@@ -3,7 +3,7 @@ import { Mail, Phone, MessageCircle, ExternalLink, Github } from "lucide-react";
 
 const quickLinks = [
   { href: "/", label: "Beranda" },
-  { href: "/cara-beli", label: "Cara Beli" },
+  { href: "/how-to", label: "Cara Beli" },
   { href: "/garansi", label: "Garansi" },
   { href: "/bantuan", label: "Bantuan" },
   { href: "/checkout", label: "Checkout" },

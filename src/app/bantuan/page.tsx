@@ -96,14 +96,8 @@ export default function BantuanPage() {
             {
               icon: HeadphonesIcon,
               label: "WhatsApp",
-              href: "https://wa.me/6281234567890",
+              href: "https://wa.me/6285854080571",
               hint: "Fast response 24/7",
-            },
-            {
-              icon: MessageSquare,
-              label: "Telegram",
-              href: "https://t.me/your_support",
-              hint: "DM admin",
             },
             {
               icon: Mail,

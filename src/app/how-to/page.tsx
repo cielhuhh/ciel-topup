@@ -127,7 +127,7 @@ export default function CaraBeliPage() {
               Lihat Bantuan
             </a>
             <a
-              href="https://wa.me/6281234567890"
+              href="https://wa.me/6285854080571"
               target="_blank"
               rel="noreferrer"
               className="rounded-xl bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500"
